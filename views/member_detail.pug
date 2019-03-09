@@ -1,0 +1,26 @@
+extends layout
+
+block content
+
+  h1 Member: #{member.first_name}  #{member.last_name} (#{member.code})
+  p Phone: #{member.phone} 
+  p email: #{member.email}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Books
+    
+    //- dl
+    //- each book in member_books
+    //-   dt 
+    //-     a(href=book.url) #{book.title}
+    //-   dd #{book.summary}
+
+    //- else
+    //-   p This member has no books.
+
+  hr
+  p
+    a(href=member.url+'/delete') Delete member
+  p
+    a(href=member.url+'/update') Update member

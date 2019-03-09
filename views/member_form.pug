@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  h1=title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='first_name') First Name:
+      input#first_name.form-control(type='text', placeholder='First name (Peter)' name='first_name' required='true' value=(undefined===member ? '' : member.first_name) )
+      label(for='last_name') Last Name:
+      input#last_name.form-control(type='text', placeholder='Last name (Parker)' name='last_name' required='true' value=(undefined===member ? '' : member.last_name))
+    div.form-group
+      label(for='phone') Phone:
+      input#phone.form-control(type='text', name='phone', value=(undefined===member ? '' : member.phone), required='true' )
+    div.form-group
+      label(for='email') Email:
+      input#email.form-control(type='text', name='email' value=(undefined===member ? '' : member.email) )
+    div.form-group
+      label(for='since') Since:
+      input#since.form-control(type='text', name='since' value=(undefined===member ? '' : member.since), required='true' )
+    div.form-group
+      label(for='last_renew') Last Renew:
+      input#last_renew.form-control(type='date', name='last_renew' value=(undefined===member ? '' : member.last_renew_formatted), required='true' )
+    div.form-group
+      label(for='code') Code:
+      input#code.form-control(type='text', name='code' value=(undefined===member ? '' : member.code), required='true' )
+    button.btn.btn-primary(type='submit') Submit
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg

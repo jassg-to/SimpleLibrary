@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 #{title}: #{member.first_name}
+  p= member.code
+  
+ 
+
+
+
+    p Do you really want to delete this member?
+    
+    form(method='POST' action='')
+      div.form-group
+        input#memberid.form-control(type='hidden',name='id', required='true', value=member._id )
+
+      button.btn.btn-primary(type='submit') Delete
