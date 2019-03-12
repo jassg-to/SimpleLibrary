@@ -1,0 +1,22 @@
+extends layout
+
+block content
+
+  h1 Member: #{member.first_name}  #{member.last_name} (#{member.code})
+  p Since: #{member.since}
+  p Phone: #{member.phone} 
+  p Email: #{member.email}
+  p Last Renew: #{member.last_renew_formatted}
+  
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Books
+    
+    p List of Books
+    
+
+  hr
+  p
+    a(href=member.url+'/delete') Delete member
+  p
+    a(href=member.url+'/update') Update member

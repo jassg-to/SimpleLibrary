@@ -6,6 +6,7 @@ var book_controller = require('../controllers/bookController');
 var book_instance_controller = require('../controllers/bookinstanceController');
 var author_controller = require('../controllers/authorController');
 var genre_controller = require('../controllers/genreController');
+var member_controller = require('../controllers/memberController')
 
 // book routes 
 // Get catalog homepage
@@ -114,5 +115,30 @@ router.get('/bookinstance/:id', book_instance_controller.bookinstance_detail);
 
 /* GET request for list of all BookInstance. */
 router.get('/bookinstances', book_instance_controller.bookinstance_list);
+
+
+// get request for creating books 
+router.get('/member/create', member_controller.member_create_get);
+
+/* POST request for creating member. */
+router.post('/member/create', member_controller.member_create_post);
+
+/* GET request to delete member. */
+router.get('/member/:id/delete', member_controller.member_delete_get);
+
+// POST request to delete member
+router.post('/member/:id/delete', member_controller.member_delete_post);
+
+/* GET request to update member. */
+router.get('/member/:id/update', member_controller.member_update_get);
+
+// POST request to update member
+router.post('/member/:id/update', member_controller.member_update_post);
+
+/* GET request for one member. */
+router.get('/member/:id', member_controller.member_detail);
+
+/* GET request for list of all member items. */
+router.get('/members', member_controller.member_list);
 
 module.exports = router;
