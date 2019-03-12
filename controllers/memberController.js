@@ -2,34 +2,12 @@ var Member = require('../models/member');
 
 var async = require('async');
 
-
-// exports.index = function (req, res) {
-//   async.parallel({
-//     book_count: function (callback) {
-//       Book.count(callback);
-//     },
-//     book_instance_count: function (callback) {
-//       BookInstance.count(callback);
-//     },
-//     book_instance_available_count: function (callback) {
-//       BookInstance.count({ status: 'Available'}, callback);
-//     },
-//     author_count: function (callback) {
-//       Author.count(callback);
-//     },
-//     genre_count: function (callback) {
-//       Genre.count(callback);
-//     },
-//   }, function (err, results) {
-//     res.render('index', { title: 'Local Library Home', error: err, data: results })
-//   });
-// };
-
 // Display list of all books
 exports.member_list = function (req, res, next) {
-  Member.find({}, 'first_name last_name ')
+  Member.find()
     .exec(function (err, list_members) {
       if (err) return next(err);
+      console.log(list_members[0]);
       res.render('member_list', { title: 'Member List', member_list: list_members });
     });
 };
@@ -102,19 +80,10 @@ exports.member_delete_post = function (req, res, next) {
     member: function (callback) {
       Member.findById(req.params.id).exec(callback)
     },
-    // book_bookinstances: function (callback) {
-    //   BookInstance.find({ 'book': req.params.id }).exec(callback)
-    // },
   }, function (err, results) {
     if (err) { return next(err); }
-    //Success
-    // if (results.book_bookinstances > 0) {
-    //   //Book has book_instances. Render in same way as for GET route.
-    //   res.render('book_delete', { title: 'Delete Book', book: results.book, book_instances: results.book_bookinstances });
-    //   return;
-    // }
-    // else {
-      //Book has no bookinstances. Delete object and redirect to the list of books.
+      //Success - member found
+      //Delete object and redirect to the list of member.  - Consider Soft Delete
       Member.findByIdAndRemove(req.body.id, function deleteMember(err) {
         if (err) { return next(err); }
         //Success - got to books list

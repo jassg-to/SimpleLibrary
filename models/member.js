@@ -9,7 +9,7 @@ var MemberSchema = Schema ({
   phone: { type: String, required: true},
   since: { type: String, required: true},
   last_renew: { type: Date, required: true},
-  code: { type: String, required: true}
+  code: { type: String, required: true},
 });
 
 MemberSchema

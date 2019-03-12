@@ -6,8 +6,8 @@ block content
   ul
   each member in member_list
     li 
-      a(href=member.url) #{member.first_name} #{member.last_name}
-      | (Code: #{member.code} - Phone: #{member.phone})
+      a(href=member.url) #{member.first_name} #{member.last_name} 
+      | ( Code: #{member.code} - Phone: #{member.phone} ) #{member.createAt}
 
   else
     li There are no members.
