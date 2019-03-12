@@ -76,8 +76,8 @@ exports.book_create_get = function (req, res, next) {
 // Handle book create on POST
 exports.book_create_post = function (req, res, next) {
 
-  sanitizeRequest(req);
-  validateRequest(req);
+  sanitizeBookRequest(req);
+  validateBookRequest(req);
 
   var book = createBookFromRequest(req);
   console.log('BOOK: ' + book);
@@ -209,8 +209,8 @@ exports.book_update_get = function(req, res, next) {
 // Handle book update on POST
 exports.book_update_post = function (req, res, next) {
   
-  sanitizeRequest(req);
-  validateRequest(req);
+  sanitizeBookRequest(req);
+  validateBookRequest(req);
 
   var book = createBookFromRequest(req);
 
@@ -247,7 +247,7 @@ exports.book_update_post = function (req, res, next) {
   }
 };
 
-sanitizeRequest = function (req) {
+sanitizeBookRequest = function (req) {
   req.sanitize('title').escape();
   req.sanitize('author').escape();
   req.sanitize('summary').escape();
@@ -267,7 +267,7 @@ sanitizeId = function (req){
   req.sanitize('id').trim();
 }
 
-validateRequest = function (req) {
+validateBookRequest = function (req) {
   //Check other data
   req.checkBody('title', 'Title must not be empty.').notEmpty();
   req.checkBody('author', 'Author must not be empty').notEmpty();
