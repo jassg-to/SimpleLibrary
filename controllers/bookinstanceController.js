@@ -34,24 +34,11 @@ exports.bookinstance_create_get = function (req, res, next) {
 
 // Handle BookInstance create on POST
 exports.bookinstance_create_post = function (req, res, next) {
-  req.checkBody('book', 'Book must be specified').notEmpty(); //We won't force Alphanumeric, because book titles might have spaces.
-  req.checkBody('imprint', 'Imprint must be specified').notEmpty();
-  req.checkBody('due_back', 'Invalid date').optional({ checkFalsy: true }).isDate();
+  console.log('PPPPPPPPP');
+  sanitizeBookinstanceRequest(req);
+  validateBookinstanceRequest(req);
 
-  req.sanitize('book').escape();
-  req.sanitize('imprint').escape();
-  req.sanitize('status').escape();
-  req.sanitize('book').trim();
-  req.sanitize('imprint').trim();
-  req.sanitize('status').trim();
-  req.sanitize('due_back').toDate();
-
-  var bookinstance = new BookInstance({
-    book: req.body.book,
-    imprint: req.body.imprint,
-    status: req.body.status,
-    due_back: req.body.due_back
-  });
+  var bookinstance = createBookinstanceFromRequest(req);
 
   var errors = req.validationErrors();
   if (errors) {
@@ -102,9 +89,7 @@ exports.bookinstance_delete_post = function (req, res, next) {
 
 // Display BookInstance update form on GET
 exports.bookinstance_update_get = function (req, res, next) {
-
-  req.sanitize('id').escape();
-  req.sanitize('id').trim();
+  sanitizeId(req);
 
   //Get book, authors and genres for form
   async.parallel({
@@ -125,30 +110,9 @@ exports.bookinstance_update_get = function (req, res, next) {
 
 // Handle bookinstance update on POST
 exports.bookinstance_update_post = function (req, res, next) {
-
-  req.sanitize('id').escape();
-  req.sanitize('id').trim();
-
-  req.checkBody('book', 'Book must be specified').notEmpty(); //We won't force Alphanumeric, because people might have spaces.
-  req.checkBody('imprint', 'Imprint must be specified').notEmpty();
-  req.checkBody('due_back', 'Invalid date').optional({ checkFalsy: true }).isDate();
-
-  req.sanitize('book').escape();
-  req.sanitize('imprint').escape();
-  req.sanitize('status').escape();
-  req.sanitize('book').trim();
-  req.sanitize('imprint').trim();
-  req.sanitize('status').trim();
-  req.sanitize('due_back').toDate();
-
-  var bookinstance = new BookInstance(
-    {
-      book: req.body.book,
-      imprint: req.body.imprint,
-      status: req.body.status,
-      due_back: req.body.due_back,
-      _id: req.params.id
-    });
+  sanitizeBookinstanceRequest(req);
+  validateBookinstanceRequest(req);
+  var bookinstance = createBookinstanceFromRequest(req);
 
   var errors = req.validationErrors();
   if (errors) {
@@ -170,3 +134,36 @@ exports.bookinstance_update_post = function (req, res, next) {
   }
 
 };
+
+sanitizeBookinstanceRequest = function (req) {
+  req.sanitize('book').escape();
+  req.sanitize('imprint').escape();
+  req.sanitize('book').trim();
+  req.sanitize('imprint').trim();
+  req.sanitize('code').escape();
+  req.sanitize('code').trim();
+
+  sanitizeId(req);
+}
+
+sanitizeId = function (req){
+  //Sanitize id passed in. 
+  req.sanitize('id').escape();
+  req.sanitize('id').trim();
+}
+
+validateBookinstanceRequest = function (req) {
+  req.checkBody('book', 'Book must be specified').notEmpty();
+  req.checkBody('imprint', 'Imprint must be specified').notEmpty();
+  req.checkBody('code', 'Barcode must be specified').notEmpty();
+}
+
+//create an instance of Book from request
+createBookinstanceFromRequest = function (req) {
+  return new BookInstance({
+    book: req.body.book,
+    imprint: req.body.imprint,
+    code: req.body.code,
+    _id: req.params.id || undefined//This is required, or a new ID will be assigned!
+  });
+}

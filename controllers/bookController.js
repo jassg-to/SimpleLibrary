@@ -76,8 +76,8 @@ exports.book_create_get = function (req, res, next) {
 // Handle book create on POST
 exports.book_create_post = function (req, res, next) {
 
-  sanitizeRequest(req);
-  validateRequest(req);
+  sanitizeBookRequest(req);
+  validateBookRequest(req);
 
   var book = createBookFromRequest(req);
   console.log('BOOK: ' + book);
@@ -209,8 +209,8 @@ exports.book_update_get = function(req, res, next) {
 // Handle book update on POST
 exports.book_update_post = function (req, res, next) {
   
-  sanitizeRequest(req);
-  validateRequest(req);
+  sanitizeBookRequest(req);
+  validateBookRequest(req);
 
   var book = createBookFromRequest(req);
 
@@ -247,7 +247,7 @@ exports.book_update_post = function (req, res, next) {
   }
 };
 
-sanitizeRequest = function (req) {
+sanitizeBookRequest = function (req) {
   req.sanitize('title').escape();
   req.sanitize('author').escape();
   req.sanitize('summary').escape();
@@ -256,7 +256,6 @@ sanitizeRequest = function (req) {
   req.sanitize('author').trim();
   req.sanitize('summary').trim();
   req.sanitize('isbn').trim();
-  req.sanitize('code').trim();
   req.sanitize('genre').escape();
 
   sanitizeId(req);
@@ -268,13 +267,12 @@ sanitizeId = function (req){
   req.sanitize('id').trim();
 }
 
-validateRequest = function (req) {
+validateBookRequest = function (req) {
   //Check other data
   req.checkBody('title', 'Title must not be empty.').notEmpty();
   req.checkBody('author', 'Author must not be empty').notEmpty();
   req.checkBody('summary', 'Summary must not be empty').notEmpty();
   req.checkBody('isbn', 'ISBN must not be empty').notEmpty();
-  req.checkBody('code', 'Barcode must not be empty').notEmpty();
 }
 
 //create an instance of Book from request
@@ -286,7 +284,6 @@ createBookFromRequest = function (req) {
       author: req.body.author,
       summary: req.body.summary,
       isbn: req.body.isbn,
-      code: req.body.code,
       genre: (typeof req.body.genre === 'undefined') ? [] : req.body.genre.split(","),
       _id: req.params.id || undefined//This is required, or a new ID will be assigned!
     });

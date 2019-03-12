@@ -29,11 +29,10 @@ exports.member_create_get = function (req, res, next) {
 // Handle member create on POST
 exports.member_create_post = function (req, res, next) {
 
-  sanitizeRequest(req);
-  validateRequest(req);
+  sanitizeMemberRequest(req);
+  validateMemberRequest(req);
 
   var member = createMemberFromRequest(req);
-  console.log('member: ' + member);
 
   var errors = req.validationErrors();
   if (errors) {
@@ -111,8 +110,8 @@ exports.member_update_get = function(req, res, next) {
 // Handle member update on POST
 exports.member_update_post = function (req, res, next) {
   
-  sanitizeRequest(req);
-  validateRequest(req);
+  sanitizeMemberRequest(req);
+  validateMemberRequest(req);
 
   var member = createMemberFromRequest(req);
 
@@ -131,7 +130,7 @@ exports.member_update_post = function (req, res, next) {
   }
 };
 
-sanitizeRequest = function (req) {
+sanitizeMemberRequest = function (req) {
   req.sanitize('first_name').escape();
   req.sanitize('last_name').escape();
   req.sanitize('email').escape();
@@ -149,7 +148,7 @@ sanitizeId = function (req){
   req.sanitize('id').trim();
 }
 
-validateRequest = function (req) {
+validateMemberRequest = function (req) {
   //Check other data
   req.checkBody('first_name', 'First name must not be empty.').notEmpty();
   req.checkBody('last_name', 'Last name must not be empty').notEmpty();
