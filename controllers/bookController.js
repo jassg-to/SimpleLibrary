@@ -256,7 +256,6 @@ sanitizeRequest = function (req) {
   req.sanitize('author').trim();
   req.sanitize('summary').trim();
   req.sanitize('isbn').trim();
-  req.sanitize('code').trim();
   req.sanitize('genre').escape();
 
   sanitizeId(req);
@@ -274,7 +273,6 @@ validateRequest = function (req) {
   req.checkBody('author', 'Author must not be empty').notEmpty();
   req.checkBody('summary', 'Summary must not be empty').notEmpty();
   req.checkBody('isbn', 'ISBN must not be empty').notEmpty();
-  req.checkBody('code', 'Barcode must not be empty').notEmpty();
 }
 
 //create an instance of Book from request
@@ -286,7 +284,6 @@ createBookFromRequest = function (req) {
       author: req.body.author,
       summary: req.body.summary,
       isbn: req.body.isbn,
-      code: req.body.code,
       genre: (typeof req.body.genre === 'undefined') ? [] : req.body.genre.split(","),
       _id: req.params.id || undefined//This is required, or a new ID will be assigned!
     });
