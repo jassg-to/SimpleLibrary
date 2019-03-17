@@ -14,7 +14,6 @@ block content
             sorting: true,
             paging: true,
             autoload: true,
-
             //pageSize: 15,
             //pageButtonCount: 5,
             controller: {
@@ -29,9 +28,9 @@ block content
                 }
             },
             fields: [
-                { name: "title", title: "Title", type: "text", width: 150},
-                { name: "summary", type: "text", width: 150 },
-               // { name: "author.first_name", type: "text", width: 150 },
+                { name: "title", title: "Title", type: "text", width: 150 , css: "trim-overflow"},
+                { name: "summary", type: "text", width: 150, css: "trim-overflow" },
+                { name: "author", type: "text", width: 150 },
                 { type: "control" }
                // ,
                
