@@ -33,8 +33,11 @@ router.post('/book/:id/update', book_controller.book_update_post);
 /* GET request for one Book. */
 router.get('/book/:id', book_controller.book_detail);
 
-/* GET request for list of all Book items. */
+/* POST request for list of all Book items. */
 router.get('/books', book_controller.book_list);
+
+// get request for creating books 
+router.get('/books/book_load_grid', book_controller.book_load_grid);
 
 
 // author routes
