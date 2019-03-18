@@ -33,12 +33,9 @@ exports.book_list = function (req, res, next) {
 };
 
 exports.book_load_grid = function (req, res, next){
-  Book.find(regexBookFilter(req),'title summary').populate('author first_name last_name').lean()
+  Book.find(regexBookFilter(req),'title summary author_name').lean()
     .exec(function (err, list_books) {
       if (err) return next(err);
-      list_books.map(book => (
-        book.author = (book.author.first_name + ' ' + book.author.last_name)
-      ));
       return res.end(JSON.stringify(list_books));
     });
 }
@@ -46,7 +43,6 @@ exports.book_load_grid = function (req, res, next){
 regexBookFilter = function (req) {
   var filter = Object.assign({},req.query)
   Object.keys(filter).map(key => (filter[key] = new RegExp( filter[key], "i")))
-  delete filter.author
   return filter
 }
 
@@ -87,53 +83,50 @@ exports.book_create_get = function (req, res, next) {
 
 // Handle book create on POST
 exports.book_create_post = function (req, res, next) {
-
   sanitizeBookRequest(req);
   validateBookRequest(req);
 
-  var book = createBookFromRequest(req);
-  console.log('BOOK: ' + book);
-
-  var errors = req.validationErrors();
-  if (errors) {
-    // Some problems so we need to re-render our book
-    console.log('GENRE: ' + req.body.genre);
-
-    console.log('ERRORS: ' + errors);
-    //Get all authors and genres for form
-    async.parallel({
-      authors: function (callback) {
-        Author.find(callback);
-      },
-      genres: function (callback) {
-        Genre.find(callback);
-      },
-    }, function (err, results) {
-      if (err) { return next(err); }
-
-      // Mark our selected genres as checked
-      for (i = 0; i < results.genres.length; i++) {
-        if (book.genre.indexOf(results.genres[i]._id) > -1) {
-          //Current genre is selected. Set "checked" flag.
-          results.genres[i].checked = 'true';
-        }
-      }
-
-      res.render('book_form', { title: 'Create Book', authors: results.authors, genres: results.genres, book: book, errors: errors });
-    });
-
-  }
-  else {
-    // Data from form is valid.
-    // We could check if book exists already, but lets just save.
-
-    book.save(function (err) {
-      if (err) { return next(err); }
-      //successful - redirect to new book record.
-      res.redirect(book.url);
-    });
-  }
+  Author.findById(req.body.author).then((author) => {
+    return createBookFromRequest(req, author);
+  }).then((book) => {
+    var errors = req.validationErrors();
+    if (errors) {
+        responseBookErrors(book, 'Create Book', errors, res)
+    } else {
+      // Data from form is valid.
+      // We could check if book exists already, but lets just save.
+        book.save(function (err) {
+        if (err) { return next(err); }
+        //successful - redirect to new book record.
+        res.redirect(book.url);
+      });
+    }
+  })
 };
+
+responseBookErrors = function (book, pageTitle, errors, res) {
+  console.log('ERRORS: ' + errors);
+  //Get all authors and genres for form
+  async.parallel({
+    authors: function (callback) {
+      Author.find(callback);
+    },
+    genres: function (callback) {
+      Genre.find(callback);
+    },
+  }, function (err, results) {
+    if (err) { return next(err); }
+
+    // Mark our selected genres as checked
+    for (i = 0; i < results.genres.length; i++) {
+      if (book.genre.indexOf(results.genres[i]._id) > -1) {
+        //Current genre is selected. Set "checked" flag.
+        results.genres[i].checked = 'true';
+      }
+    }
+    res.render('book_form', { title: pageTitle, authors: results.authors, genres: results.genres, book: book, errors: errors });
+  });
+}
 
 
 exports.book_delete_get = function (req, res, next) {
@@ -220,43 +213,24 @@ exports.book_update_get = function(req, res, next) {
 
 // Handle book update on POST
 exports.book_update_post = function (req, res, next) {
-  
   sanitizeBookRequest(req);
   validateBookRequest(req);
 
-  var book = createBookFromRequest(req);
-
-  var errors = req.validationErrors();
-  if (errors) {
-    // Re-render book with error information
-    // Get all authors and genres for form
-    async.parallel({
-      authors: function (callback) {
-        Author.find(callback);
-      },
-      genres: function (callback) {
-        Genre.find(callback);
-      },
-    }, function (err, results) {
-      if (err) { return next(err); }
-
-      // Mark our selected genres as checked
-      for (i = 0; i < results.genres.length; i++) {
-        if (book.genre.indexOf(results.genres[i]._id) > -1) {
-          results.genres[i].checked = 'true';
-        }
-      }
-      res.render('book_form', { title: 'Update Book', authors: results.authors, genres: results.genres, book: book, errors: errors });
-    });
-
-  } else {
-    // Data from form is valid. Update the record.
-    Book.findByIdAndUpdate(req.params.id, book, {}, function (err, thebook) {
-      if (err) { return next(err); }
-      //successful - redirect to book detail page.
-      res.redirect(thebook.url);
-    });
-  }
+  Author.findById(req.body.author).then((author) => {
+    return createBookFromRequest(req, author);
+  }).then((book) => {
+    var errors = req.validationErrors();
+    if (errors) {
+      responseBookErrors(book, 'Update Book', errors, res)
+    } else {
+      // Data from form is valid. Update the record.
+      Book.findByIdAndUpdate(req.params.id, book, {}, function (err, thebook) {
+        if (err) { return next(err); }
+        //successful - redirect to book detail page.
+        res.redirect(thebook.url);
+      });
+    }
+  });
 };
 
 sanitizeBookRequest = function (req) {
@@ -288,15 +262,14 @@ validateBookRequest = function (req) {
 }
 
 //create an instance of Book from request
-createBookFromRequest = function (req) {
-  console.log(req.params.id);
-  return new Book(
-    {
-      title: req.body.title,
-      author: req.body.author,
-      summary: req.body.summary,
-      isbn: req.body.isbn,
-      genre: (typeof req.body.genre === 'undefined') ? [] : req.body.genre.split(","),
-      _id: req.params.id || undefined//This is required, or a new ID will be assigned!
-    });
+createBookFromRequest = async function (req, author) {
+  return new Book({
+    title: req.body.title,
+    author: req.body.author,
+    author_name: author.name,
+    summary: req.body.summary,
+    isbn: req.body.isbn,
+    genre: (typeof req.body.genre === 'undefined') ? [] : req.body.genre.split(","),
+    _id: req.params.id || undefined//This is required, or a new ID will be assigned!
+  }); 
 }
