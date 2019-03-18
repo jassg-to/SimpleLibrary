@@ -2,9 +2,11 @@
 // populate database - script.
 
 //Get arguments passed on command line
+
 var userArgs = process.argv.slice(2);
-if (!userArgs[0].startsWith('mongodb://')) {
-  console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
+console.log(userArgs);
+if (!userArgs[0] || !userArgs[0].startsWith('mongodb')) {
+  console.log('WARN: No mongodb URL specified using default');
   return
 }
 
@@ -14,25 +16,28 @@ var Author = require('./models/author')
 var Genre = require('./models/genre')
 var BookInstance = require('./models/bookinstance')
 
-
 var mongoose = require('mongoose');
-var mongoDB = userArgs[0];
-mongoose.connect(mongoDB);
+var mongoDB = userArgs[0] || 'mongodb+srv://jassgclient:Q6j7EBHlGDoiNyrR@jassglibrary-mca7a.mongodb.net/jassglibrary?retryWrites=true';
+
+console.log(mongoDB)
+
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
 var db = mongoose.connection;
-mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 var authors = []
 var genres = []
 var books = []
 var bookinstances = []
 
-function authorCreate(first_name, family_name, d_birth, d_death, cb) {
-  authordetail = { first_name: first_name, family_name: family_name }
+function authorCreate(first_name, last_name, d_birth, d_death, cb) {
+  authordetail = { first_name: first_name, last_name: last_name }
   if (d_birth != false) authordetail.date_of_birth = d_birth
   if (d_death != false) authordetail.date_of_death = d_death
 
+  
   var author = new Author(authordetail);
-
   author.save(function (err) {
     if (err) {
       cb(err, null)
@@ -100,7 +105,6 @@ function bookInstanceCreate(book, imprint, due_back, status, cb) {
     cb(null, book)
   });
 }
-
 
 function createGenreAuthors(cb) {
   async.parallel([
@@ -203,8 +207,6 @@ function createBookInstances(cb) {
     cb);
 }
 
-
-
 async.series([
   createGenreAuthors,
   createBooks,
@@ -214,10 +216,8 @@ async.series([
   function (err, results) {
     if (err) {
       console.log('FINAL ERR: ' + err);
-    }
-    else {
+    } else {
       console.log('BOOKInstances: ' + bookinstances);
-
     }
     //All done, disconnect from database
     mongoose.connection.close();

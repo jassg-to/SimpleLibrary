@@ -6,7 +6,7 @@ var async = require('async');
 // Display author list
 exports.author_list = function (req, res, next) {
   Author.find()
-    .sort([['family_name', 'ascending']])
+    .sort([['last_name', 'ascending']])
     .exec(function (err, list_authors) {
       // succesful rendering
       res.render('author_list', { title: 'Author List', author_list: list_authors });
@@ -38,15 +38,15 @@ exports.author_create_get = function (req, res, next) {
 // Handle Author create on POST
 exports.author_create_post = function (req, res, next) {
   req.checkBody('first_name', 'First name must be specified.').notEmpty(); //We won't force Alphanumeric, because people might have spaces.
-  req.checkBody('family_name', 'Family name must be specified.').notEmpty();
-  req.checkBody('family_name', 'Family name must be alphanumeric text.').isAlpha();
+  req.checkBody('last_name', 'Family name must be specified.').notEmpty();
+  req.checkBody('last_name', 'Family name must be alphanumeric text.').isAlpha();
   req.checkBody('date_of_birth', 'Invalid date').optional({ checkFalsy: true }).isDate();
   req.checkBody('date_of_death', 'Invalid date').optional({ checkFalsy: true }).isDate();
 
   req.sanitize('first_name').escape();
-  req.sanitize('family_name').escape();
+  req.sanitize('last_name').escape();
   req.sanitize('first_name').trim();
-  req.sanitize('family_name').trim();
+  req.sanitize('last_name').trim();
   req.sanitize('date_of_birth').toDate();
   req.sanitize('date_of_death').toDate();
 
@@ -55,7 +55,7 @@ exports.author_create_post = function (req, res, next) {
   var author = new Author(
     {
       first_name: req.body.first_name,
-      family_name: req.body.family_name,
+      last_name: req.body.last_name,
       date_of_birth: req.body.date_of_birth,
       date_of_death: req.body.date_of_death
   });
@@ -139,14 +139,14 @@ exports.author_update_post = function (req, res, next) {
   req.sanitize('id').trim();
 
   req.checkBody('first_name', 'First name must be specified.').notEmpty();
-  req.checkBody('family_name', 'Family name must be specified.').notEmpty();
-  req.checkBody('family_name', 'Family name must be alphanumeric text.').isAlpha();
+  req.checkBody('last_name', 'Family name must be specified.').notEmpty();
+  req.checkBody('last_name', 'Family name must be alphanumeric text.').isAlpha();
   req.checkBody('date_of_birth', 'Invalid date').optional({ checkFalsy: true }).isDate();
   req.checkBody('date_of_death', 'Invalid date').optional({ checkFalsy: true }).isDate();
   req.sanitize('first_name').escape();
-  req.sanitize('family_name').escape();
+  req.sanitize('last_name').escape();
   req.sanitize('first_name').trim();
-  req.sanitize('family_name').trim();
+  req.sanitize('last_name').trim();
   req.sanitize('date_of_birth').toDate();
   req.sanitize('date_of_death').toDate();
 
@@ -157,7 +157,7 @@ exports.author_update_post = function (req, res, next) {
   var author = new Author(
     {
       first_name: req.body.first_name,
-      family_name: req.body.family_name,
+      last_name: req.body.last_name,
       date_of_birth: req.body.date_of_birth,
       date_of_death: req.body.date_of_death,
       _id: req.params.id

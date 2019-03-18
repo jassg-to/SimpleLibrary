@@ -5,7 +5,7 @@ var moment = require('moment');
 var AuthorSchema = Schema(
   {
     first_name: {type: String, required: true, max: 100},
-    family_name: {type: String, required: true, max: 100},
+    last_name: {type: String, required: true, max: 100},
     date_of_birth: {type: Date},
     date_of_death: {type: Date},
   }
@@ -14,7 +14,7 @@ var AuthorSchema = Schema(
 AuthorSchema
 .virtual('name')
 .get(function () {
-  return this.family_name + ', ' + this.first_name;
+  return this.last_name + ', ' + this.first_name;
 });
 
 AuthorSchema
