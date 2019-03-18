@@ -33,9 +33,10 @@ exports.book_list = function (req, res, next) {
 };
 
 exports.book_load_grid = function (req, res, next){
-  Book.find(regexBookFilter(req),'title summary author_name').lean()
+  Book.find(regexBookFilter(req))
     .exec(function (err, list_books) {
       if (err) return next(err);
+      console.log(list_books);
       return res.end(JSON.stringify(list_books));
     });
 }
@@ -50,7 +51,6 @@ regexBookFilter = function (req) {
 exports.book_detail = function (req, res) {
   async.parallel({
     book: function (callback) {
-
       Book.findById(req.params.id)
         .populate('author')
         .populate('genre')
