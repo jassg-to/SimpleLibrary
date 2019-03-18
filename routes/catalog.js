@@ -66,6 +66,10 @@ router.get('/author/:id', author_controller.author_detail);
 /* GET request for list of all Authors. */
 router.get('/authors', author_controller.author_list);  
 
+// get request for creating books 
+router.get('/authors/author_load_grid', author_controller.author_load_grid);
+
+
 // genre routes
 
 

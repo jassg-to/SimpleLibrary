@@ -29,7 +29,7 @@ exports.index = function (req, res) {
 
 // Display list of all books
 exports.book_list = function (req, res, next) {
-  res.render('book_list', {title: 'All Books'});
+  res.render('book_list', {title: 'Book List'});
 };
 
 exports.book_load_grid = function (req, res, next){

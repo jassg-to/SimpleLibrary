@@ -3,6 +3,29 @@ var Book = require('../models/book');
 
 var async = require('async');
 
+
+// Display list of all books
+exports.author_list = function (req, res, next) {
+  res.render('author_list', {title: 'Author List'});
+};
+
+exports.author_load_grid = function (req, res, next){
+  Author.find(regexAuthorFilter(req))
+    .exec(function (err, list_authors) {
+      if (err) return next(err);
+      console.log(list_authors);
+      return res.end(JSON.stringify(list_authors));
+    });
+}
+
+regexAuthorFilter = function (req) {
+  var filter = Object.assign({},req.query)
+  Object.keys(filter).map(key => (filter[key] = new RegExp( filter[key], "i")))
+  delete filter.dod_formatted
+  delete filter.dob_formatted
+  return filter
+}
+
 // Display author list
 exports.author_list = function (req, res, next) {
   Author.find()

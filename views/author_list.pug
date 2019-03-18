@@ -1,13 +1,22 @@
 extends layout
 
-block content
-  h1= title
-  
-  ul
-  each author in author_list
-    li 
-      a(href=author.url) #{author.name} 
-      | (Birth: #{author.dob_formatted} - Death: #{author.dod_formatted})
+block scripts
+  script(src='/js/jsGridUtils.js')
+  script. 
+    $(function() {
+        var fields = [
+          { name: "first_name", title: "First Name", type: "text", width: 150 , css: "trim-overflow"},
+          { name: "last_name", title: "Last Name", type: "text", width: 150, css: "trim-overflow" },
+          { name: "dob_formatted", title: "D.O.B.", type: "text", width: 100 },
+          { name: "dod_formatted", title: "D.O.D.", type: "text", width: 100 },
+          { name: "url", type: "text", visible: false},
+          { type: "control" }
+        ];
+        initGrid('jsGrid', '/catalog/authors/author_load_grid', fields);
+    });    
 
-  else
-    li There are no authors.
+block content
+
+  h1=title
+  
+  div#jsGrid
