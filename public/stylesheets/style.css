@@ -3,3 +3,9 @@
     padding: 0;
     list-style: none;
 }
+
+.trim-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

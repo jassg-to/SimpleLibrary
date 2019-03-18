@@ -5,7 +5,6 @@ var BookInstance = require('../models/bookinstance');
 
 var async = require('async');
 
-
 exports.index = function (req, res) {
   async.parallel({
     book_count: function (callback) {
@@ -30,13 +29,26 @@ exports.index = function (req, res) {
 
 // Display list of all books
 exports.book_list = function (req, res, next) {
-  Book.find({}, 'title author ')
-    .populate('author')
+  res.render('book_list', {title: 'All Books'});
+};
+
+exports.book_load_grid = function (req, res, next){
+  Book.find(regexBookFilter(req),'title summary').populate('author first_name last_name').lean()
     .exec(function (err, list_books) {
       if (err) return next(err);
-      res.render('book_list', { title: 'Book List', book_list: list_books });
+      list_books.map(book => (
+        book.author = (book.author.first_name + ' ' + book.author.last_name)
+      ));
+      return res.end(JSON.stringify(list_books));
     });
-};
+}
+
+regexBookFilter = function (req) {
+  var filter = Object.assign({},req.query)
+  Object.keys(filter).map(key => (filter[key] = new RegExp( filter[key], "i")))
+  delete filter.author
+  return filter
+}
 
 // Display detail page for a specific book
 exports.book_detail = function (req, res) {

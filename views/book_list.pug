@@ -1,13 +1,46 @@
 extends layout
 
-block content
-  h1= title
-  
-  ul
-  each book in book_list
-    li 
-      a(href=book.url) #{book.title} 
-      | (#{book.author.name})
 
-  else
-    li There are no books.
+block content
+
+  script. 
+    $(function() {
+
+      $("#jsGrid").jsGrid({
+            width: "100%",
+            height: "700px",
+
+            filtering: true,
+            sorting: true,
+            paging: true,
+            autoload: true,
+            //pageSize: 15,
+            //pageButtonCount: 5,
+            controller: {
+                loadData: function(filter) {
+                    console.log(filter)
+                    return $.ajax({
+                        type: "GET",
+                        url: "/catalog/books/book_load_grid",
+                        dataType: "json",
+                        data: filter
+                    });
+                }
+            },
+            fields: [
+                { name: "title", title: "Title", type: "text", width: 150 , css: "trim-overflow"},
+                { name: "summary", type: "text", width: 150, css: "trim-overflow" },
+                { name: "author", type: "text", width: 150 },
+                { type: "control" }
+               // ,
+               
+               // { name: "Summary", type: "text", width: 200 },
+                
+            ]
+        });
+    });    
+
+  h1=title
+  
+  div#jsGrid
+  
