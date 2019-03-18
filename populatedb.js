@@ -7,7 +7,6 @@ var userArgs = process.argv.slice(2);
 console.log(userArgs);
 if (!userArgs[0] || !userArgs[0].startsWith('mongodb')) {
   console.log('WARN: No mongodb URL specified using default');
-  return
 }
 
 var async = require('async')
@@ -68,6 +67,7 @@ function bookCreate(title, summary, isbn, author, genre, cb) {
     title: title,
     summary: summary,
     author: author,
+    author_name: author.name,
     isbn: isbn
   }
   if (genre != false) bookdetail.genre = genre

@@ -34,7 +34,6 @@ exports.bookinstance_create_get = function (req, res, next) {
 
 // Handle BookInstance create on POST
 exports.bookinstance_create_post = function (req, res, next) {
-  console.log('PPPPPPPPP');
   sanitizeBookinstanceRequest(req);
   validateBookinstanceRequest(req);
 
@@ -116,7 +115,6 @@ exports.bookinstance_update_post = function (req, res, next) {
 
   var errors = req.validationErrors();
   if (errors) {
-
     Book.find({}, 'title')
       .exec(function (err, books) {
         if (err) { return next(err); }
@@ -124,8 +122,7 @@ exports.bookinstance_update_post = function (req, res, next) {
         res.render('bookinstance_form', { title: 'Update BookInstance', book_list: books, selected_book: bookinstance.book._id, errors: errors, bookinstance: bookinstance });
       });
     return;
-  }
-  else {
+  } else {
     // Data from form is valid
     BookInstance.findByIdAndUpdate(req.params.id, bookinstance, {}, function (err, thebookinstance) {
       if (err) return next(err); 

@@ -47,4 +47,12 @@ AuthorSchema
     return moment(this.date_of_death).format('YYYY-MM-DD');
   });
 
+AuthorSchema.pre('save', function() {
+  console.log('Hook OK');
+  if (this.getUpdate().first_name) {
+    console.log('mudou first_name');
+  }
+});    
+
+
 module.exports = mongoose.model('Author', AuthorSchema);
