@@ -51,11 +51,11 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-//set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = process.env.MONGODB_URI || 'mongodb://luongvo:l94!CJ1JaHW4hK0f#B@ds153392.mlab.com:53392/luongvo_local_library';
-mongoose.connect(mongoDB);
+var mongoDB = 'mongodb+srv://jassgclient:Q6j7EBHlGDoiNyrR@jassglibrary-mca7a.mongodb.net/jassglibrary?retryWrites=true';
+mongoose.connect(mongoDB, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
 var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDb connnection error: '));
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 module.exports = app;
