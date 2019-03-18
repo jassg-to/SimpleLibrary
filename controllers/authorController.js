@@ -129,12 +129,10 @@ exports.author_update_post = function (req, res, next) {
     // Data from form is valid. Update the record.
     Author.findByIdAndUpdate(req.params.id, author, {}, function (err, theauthor) {
       if (err) { return next(err); }
-      //successful - redirect to genre detail page.
+      Book.updateMany({author: author.id}, {$set: {author_name: author.name}})
       res.redirect(theauthor.url);
     });
   }
-
-
 };
 
 sanitizeAuthorRequest = function (req) {
@@ -165,8 +163,7 @@ validateAuthorRequest = function (req) {
 
 //create an instance of Book from request
 createAuthorFromRequest = function (req) {
-  console.log(req.params.id);
-  return new Book(
+  return new Author(
     {
       first_name: req.body.first_name,
       last_name: req.body.last_name,
