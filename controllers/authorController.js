@@ -2,6 +2,7 @@ var Author = require('../models/author');
 var Book = require('../models/book');
 
 var async = require('async');
+var {regexReqFilter} = require('../utils')
 
 
 // Display list of all books
@@ -10,20 +11,12 @@ exports.author_list = function (req, res, next) {
 };
 
 exports.author_load_grid = function (req, res, next){
-  Author.find(regexAuthorFilter(req))
+  Author.find(regexReqFilter(req))
     .exec(function (err, list_authors) {
       if (err) return next(err);
       console.log(list_authors);
       return res.end(JSON.stringify(list_authors));
     });
-}
-
-regexAuthorFilter = function (req) {
-  var filter = Object.assign({},req.query)
-  Object.keys(filter).map(key => (filter[key] = new RegExp( filter[key], "i")))
-  delete filter.dod_formatted
-  delete filter.dob_formatted
-  return filter
 }
 
 // Display author list
@@ -186,7 +179,7 @@ validateAuthorRequest = function (req) {
 
 //create an instance of Book from request
 createAuthorFromRequest = function (req) {
-  return new Author(
+  var author = new Author(
     {
       first_name: req.body.first_name,
       last_name: req.body.last_name,
@@ -194,4 +187,7 @@ createAuthorFromRequest = function (req) {
       date_of_death: req.body.date_of_death,
       _id: req.params.id || undefined//This is required, or a new ID will be assigned!
     });
+    author.formatted_date_of_death = author.dod_formatted
+    author.formatted_date_of_birth = author.dob_formatted
+    return author
 }

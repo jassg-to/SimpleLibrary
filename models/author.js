@@ -8,6 +8,8 @@ var AuthorSchema = Schema(
     last_name: {type: String, required: true, max: 100},
     date_of_birth: {type: Date},
     date_of_death: {type: Date},
+    formatted_date_of_birth: {type: String},
+    formatted_date_of_death: {type: String}
   }
 );
 
