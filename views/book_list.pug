@@ -1,22 +1,20 @@
 extends layout
 
 block scripts
-     script(src='/js/jsGridUtils.js')
-
-block content
-
+  script(src='/js/jsGridUtils.js')
   script. 
     $(function() {
         var fields = [
-            { name: "title", title: "Title", type: "text", width: 150 , css: "trim-overflow"},
-            { name: "summary", title: "Summary", type: "text", width: 150, css: "trim-overflow" },
-            { name: "author_name", title: "Author", type: "text", width: 150 },
-            { name: "url", type: "text", visible: false},
-            { type: "control" }
+          { name: "title", title: "Title", type: "text", width: 150 , css: "trim-overflow"},
+          { name: "summary", title: "Summary", type: "text", width: 150, css: "trim-overflow" },
+          { name: "author_name", title: "Author", type: "text", width: 150 },
+          { name: "url", type: "text", visible: false},
+          { type: "control" }
         ];
-
         initGrid('jsGrid', '/catalog/books/book_load_grid', fields);
     });    
+
+block content
 
   h1=title
   

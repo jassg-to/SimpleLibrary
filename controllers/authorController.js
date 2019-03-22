@@ -2,16 +2,22 @@ var Author = require('../models/author');
 var Book = require('../models/book');
 
 var async = require('async');
+var {regexReqFilter} = require('../utils')
 
-// Display author list
+
+// Display list of all Authors
 exports.author_list = function (req, res, next) {
-  Author.find()
-    .sort([['last_name', 'ascending']])
-    .exec(function (err, list_authors) {
-      // succesful rendering
-      res.render('author_list', { title: 'Author List', author_list: list_authors });
-    });
+  res.render('author_list', {title: 'Author List'});
 };
+
+exports.author_load_grid = function (req, res, next){
+  Author.find(regexReqFilter(req))
+    .exec(function (err, list_authors) {
+      if (err) return next(err);
+      console.log(list_authors);
+      return res.end(JSON.stringify(list_authors));
+    });
+}
 
 // Display detail page for a specific Author
 exports.author_detail = function (req, res, next) {
@@ -163,7 +169,7 @@ validateAuthorRequest = function (req) {
 
 //create an instance of Book from request
 createAuthorFromRequest = function (req) {
-  return new Author(
+  var author = new Author(
     {
       first_name: req.body.first_name,
       last_name: req.body.last_name,
@@ -171,4 +177,7 @@ createAuthorFromRequest = function (req) {
       date_of_death: req.body.date_of_death,
       _id: req.params.id || undefined//This is required, or a new ID will be assigned!
     });
+    author.formatted_date_of_death = author.dod_formatted
+    author.formatted_date_of_birth = author.dob_formatted
+    return author
 }

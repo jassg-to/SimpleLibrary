@@ -1,13 +1,22 @@
 extends layout
 
-block content
-  h1= title
-  
-  ul
-  each member in member_list
-    li 
-      a(href=member.url) #{member.first_name} #{member.last_name} 
-      | ( Code: #{member.code} - Phone: #{member.phone} ) #{member.createAt}
+block scripts
+  script(src='/js/jsGridUtils.js')
+  script. 
+    $(function() {
+        var fields = [
+          { name: "first_name", title: "First Name", type: "text", width: 150 , css: "trim-overflow"},
+          { name: "last_name", title: "Last Name", type: "text", width: 150, css: "trim-overflow" },
+          { name: "phone", title: "Phone", type: "text", width: 100 },
+          { name: "email", title: "Email", type: "text", width: 100 },
+          { name: "Since", type: "text", visible: false},
+          { type: "control" }
+        ];
+        initGrid('jsGrid', '/catalog/members/member_load_grid', fields);
+    });    
 
-  else
-    li There are no members.
+block content
+
+  h1=title
+  
+  div#jsGrid

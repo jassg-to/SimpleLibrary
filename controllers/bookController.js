@@ -2,6 +2,7 @@ var Book = require('../models/book');
 var Author = require('../models/author');
 var Genre = require('../models/genre');
 var BookInstance = require('../models/bookinstance');
+var { regexReqFilter } = require('../utils')
 
 var async = require('async');
 
@@ -29,22 +30,16 @@ exports.index = function (req, res) {
 
 // Display list of all books
 exports.book_list = function (req, res, next) {
-  res.render('book_list', {title: 'All Books'});
+  res.render('book_list', {title: 'Book List'});
 };
 
 exports.book_load_grid = function (req, res, next){
-  Book.find(regexBookFilter(req))
+  Book.find(regexReqFilter(req))
     .exec(function (err, list_books) {
       if (err) return next(err);
       console.log(list_books);
       return res.end(JSON.stringify(list_books));
     });
-}
-
-regexBookFilter = function (req) {
-  var filter = Object.assign({},req.query)
-  Object.keys(filter).map(key => (filter[key] = new RegExp( filter[key], "i")))
-  return filter
 }
 
 // Display detail page for a specific book

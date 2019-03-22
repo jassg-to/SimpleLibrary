@@ -2,7 +2,7 @@ var Member = require('../models/member');
 
 var async = require('async');
 
-// Display list of all books
+// Display list of all members
 exports.member_list = function (req, res, next) {
   Member.find()
     .exec(function (err, list_members) {
@@ -11,6 +11,20 @@ exports.member_list = function (req, res, next) {
       res.render('member_list', { title: 'Member List', member_list: list_members });
     });
 };
+
+// Display list of all members
+exports.member_list = function (req, res, next) {
+  res.render('member_list', {title: 'Member List'});
+};
+
+exports.member_load_grid = function (req, res, next){
+  Member.find(regexReqFilter(req))
+    .exec(function (err, member_list) {
+      if (err) return next(err);
+      console.log(member_list);
+      return res.end(JSON.stringify(member_list));
+    });
+}
 
 // Display detail page for a specific member
 exports.member_detail = function (req, res) {
