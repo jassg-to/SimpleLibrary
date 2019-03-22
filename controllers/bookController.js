@@ -2,7 +2,7 @@ var Book = require('../models/book');
 var Author = require('../models/author');
 var Genre = require('../models/genre');
 var BookInstance = require('../models/bookinstance');
-var {regexReqFilter} = require('../utils')
+var { regexReqFilter } = require('../utils')
 
 var async = require('async');
 

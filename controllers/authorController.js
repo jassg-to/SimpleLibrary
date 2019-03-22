@@ -5,7 +5,7 @@ var async = require('async');
 var {regexReqFilter} = require('../utils')
 
 
-// Display list of all books
+// Display list of all Authors
 exports.author_list = function (req, res, next) {
   res.render('author_list', {title: 'Author List'});
 };
@@ -18,16 +18,6 @@ exports.author_load_grid = function (req, res, next){
       return res.end(JSON.stringify(list_authors));
     });
 }
-
-// Display author list
-exports.author_list = function (req, res, next) {
-  Author.find()
-    .sort([['last_name', 'ascending']])
-    .exec(function (err, list_authors) {
-      // succesful rendering
-      res.render('author_list', { title: 'Author List', author_list: list_authors });
-    });
-};
 
 // Display detail page for a specific Author
 exports.author_detail = function (req, res, next) {

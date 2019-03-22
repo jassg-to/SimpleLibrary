@@ -148,4 +148,8 @@ router.get('/member/:id', member_controller.member_detail);
 /* GET request for list of all member items. */
 router.get('/members', member_controller.member_list);
 
+// get request for creating books 
+router.get('/members/member_load_grid', member_controller.member_load_grid);
+
+
 module.exports = router;
