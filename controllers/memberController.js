@@ -1,91 +1,83 @@
-var Member = require('../models/member');
-
-var async = require('async');
+var Member = require('../models/member')
+var async = require('async')
+var { regexReqFilter } = require('../utils')
 
 // Display list of all members
-exports.member_list = function (req, res, next) {
+list = function (req, res, next) {
+  res.render('member_list', {title: 'Member List'})
+}
+
+load_grid = function (req, res, next){
+  console.log('aaaaaaaaaa');
+//  console.log(regexReqFilter(req));
   Member.find()
-    .exec(function (err, list_members) {
-      if (err) return next(err);
-      console.log(list_members[0]);
-      res.render('member_list', { title: 'Member List', member_list: list_members });
-    });
-};
-
-// Display list of all members
-exports.member_list = function (req, res, next) {
-  res.render('member_list', {title: 'Member List'});
-};
-
-exports.member_load_grid = function (req, res, next){
-  Member.find(regexReqFilter(req))
     .exec(function (err, member_list) {
-      if (err) return next(err);
-      console.log(member_list);
-      return res.end(JSON.stringify(member_list));
-    });
+      if (err) return next(err)
+      console.log(member_list)
+      return res.end(JSON.stringify(member_list))
+    })
 }
 
 // Display detail page for a specific member
-exports.member_detail = function (req, res) {
+detail = function (req, res, next) {
   Member.findById(req.params.id)
   .exec(function(err, memberInstance) {
-    if (err) return next(err);
-    res.render('member_detail', {title: 'Member Detail', member: memberInstance});
-  });
-};
+    if (err) { return next(err) }
+    res.render('member_detail', {title: 'Member Detail', member: memberInstance})
+  })
+}
 
 // Display member create form on GET
-exports.member_create_get = function (req, res, next) {
-  res.render('member_form', { title: 'Create Member'});
-};
+create_get = function (req, res, next) {
+  res.render('member_form', { title: 'Create Member'})
+}
 
 // Handle member create on POST
-exports.member_create_post = function (req, res, next) {
+create_post = function (req, res, next) {
 
-  sanitizeMemberRequest(req);
-  validateMemberRequest(req);
+  sanitizeRequest(req)
+  validateRequest(req)
 
-  var member = createMemberFromRequest(req);
+  var member = createObjectFromRequest(req)
 
-  var errors = req.validationErrors();
+  var errors = req.validationErrors()
   if (errors) {
     // Some problems so we need to re-render our member
-    console.log('GENRE: ' + req.body.genre);
+    console.log('GENRE: ' + req.body.genre)
 
-    console.log('ERRORS: ' + errors);
+    console.log('ERRORS: ' + errors)
     
-    res.render('member_form', { title: 'Create member', member: member, errors: errors });
+    res.render('member_form', { title: 'Create member', member: member, errors: errors })
 
   } else {
     // Data from form is valid.
     // We could check if member exists already, but lets just save.
 
     member.save(function (err) {
-      if (err) { return next(err); }
+      if (err) { return next(err) }
       //successful - redirect to new member record.
-      res.redirect(member.url);
-    });
+      res.redirect(member.url)
+    })
   }
-};
+}
 
 
-exports.member_delete_get = function (req, res, next) {
+delete_get = function (req, res, next) {
 
   async.parallel({
     member: function (callback) {
       Member.findById(req.params.id).exec(callback)
     }
   }, function (err, results) {
-    if (err) { return next(err); }
+    if (err) { return next(err) }
     //Successful, so render
-    res.render('member_delete', { title: 'Delete member', member: results.member});
-  });
+    res.render('member_delete', { title: 'Delete member', member: results.member})
+  })
 
-};
+}
 
 // Handle member delete on POST
-exports.member_delete_post = function (req, res, next) {
+delete_post = function (req, res, next) {
 
   //Assume the post will have id (ie no checking or sanitisation).
 
@@ -94,86 +86,86 @@ exports.member_delete_post = function (req, res, next) {
       Member.findById(req.params.id).exec(callback)
     },
   }, function (err, results) {
-    if (err) { return next(err); }
+    if (err) { return next(err) }
       //Success - member found
       //Delete object and redirect to the list of member.  - Consider Soft Delete
       Member.findByIdAndRemove(req.body.id, function deleteMember(err) {
-        if (err) { return next(err); }
+        if (err) { return next(err) }
         //Success - got to books list
-        res.redirect('/catalog/members')
+        res.redirect('/members')
       })
 
     // }
-  });
+  })
 
-};
+}
 
 // Display book update form on GET
-exports.member_update_get = function(req, res, next) {
+update_get = function(req, res, next) {
 
-  sanitizeId(req);
+  sanitizeId(req)
 
   Member.findById(req.params.id, function (err, member) {
-    if (err) { return next(err); }
+    if (err) { return next(err) }
     //On success
-    res.render('member_form', { title: 'Update Member', member: member });
-  });
+    res.render('member_form', { title: 'Update Member', member: member })
+  })
  
-};
+}
 
 // Handle member update on POST
-exports.member_update_post = function (req, res, next) {
+update_post = function (req, res, next) {
   
-  sanitizeMemberRequest(req);
-  validateMemberRequest(req);
+  sanitizeRequest(req)
+  validateRequest(req)
 
-  var member = createMemberFromRequest(req);
+  var member = createObjectFromRequest(req)
 
-  var errors = req.validationErrors();
+  var errors = req.validationErrors()
   if (errors) {
     //If there are errors render the form again, passing the previously entered values and errors
-    res.render('member_form', { title: 'Update Member', member: member, errors: errors });
-    return;
+    res.render('member_form', { title: 'Update Member', member: member, errors: errors })
+    return
   } else {
     // Data from form is valid. Update the record.
     Member.findByIdAndUpdate(req.params.id, member, {}, function (err, themember) {
-      if (err) { return next(err); }
+      if (err) { return next(err) }
       //successful - redirect to genre detail page.
-      res.redirect(themember.url);
-    });
+      res.redirect(themember.url)
+    })
   }
-};
-
-sanitizeMemberRequest = function (req) {
-  req.sanitize('first_name').escape();
-  req.sanitize('last_name').escape();
-  req.sanitize('email').escape();
-  req.sanitize('phone').escape();
-  req.sanitize('since').trim();
-  req.sanitize('last_renew').toDate();
-  req.sanitize('code').trim();
-
-  sanitizeId(req);
 }
 
-sanitizeId = function (req){
+const sanitizeRequest = function (req) {
+  req.sanitize('first_name').escape()
+  req.sanitize('last_name').escape()
+  req.sanitize('email').escape()
+  req.sanitize('phone').escape()
+  req.sanitize('since').trim()
+  req.sanitize('last_renew').toDate()
+  req.sanitize('code').trim()
+
+  sanitizeId(req)
+}
+
+const sanitizeId = function (req){
   //Sanitize id passed in. 
-  req.sanitize('id').escape();
-  req.sanitize('id').trim();
+  req.sanitize('id').escape()
+  req.sanitize('id').trim()
 }
 
-validateMemberRequest = function (req) {
+const validateRequest = function (req) {
   //Check other data
-  req.checkBody('first_name', 'First name must not be empty.').notEmpty();
-  req.checkBody('last_name', 'Last name must not be empty').notEmpty();
-  req.checkBody('phone', 'Phone must not be empty').notEmpty();
-  req.checkBody('since', 'Since must not be empty').notEmpty();
-  req.checkBody('last_renew', 'Last renew must not be empty').notEmpty();
-  req.checkBody('code', 'Code must not be empty').notEmpty();
+  req.checkBody('first_name', 'First name must not be empty.').notEmpty()
+  req.checkBody('last_name', 'Last name must not be empty').notEmpty()
+  req.checkBody('phone', 'Phone must not be empty').notEmpty()
+  req.checkBody('since', 'Since must not be empty').notEmpty()
+  req.checkBody('last_renew', 'Last renew must not be empty').notEmpty()
+  req.checkBody('code', 'Code must not be empty').notEmpty()
 }
 
 //create an instance of member from request
-createMemberFromRequest = function (req) {
+const createObjectFromRequest = function (req) {
   return new Member(
     {
       first_name: req.body.first_name,
@@ -184,5 +176,18 @@ createMemberFromRequest = function (req) {
       last_renew: req.body.last_renew,
       code: req.body.code,
       _id: req.params.id || undefined//This is required, or a new ID will be assigned!
-    });
+    })
+}
+
+module.exports = {
+  index,
+  list,
+  load_grid,
+  detail,
+  create_get,
+  create_post,
+  delete_get,
+  delete_post,
+  update_get,
+  update_post
 }

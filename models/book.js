@@ -13,7 +13,7 @@ var BookSchema = Schema ({
 BookSchema
 .virtual('url')
 .get(function() {
-  return '/catalog/book/' + this._id;
+  return '/book/' + this._id;
 });
 
 BookSchema.set('toObject', { virtuals: true });

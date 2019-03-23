@@ -4,8 +4,8 @@ block content
   h1= title
 
   ul
-  each val in bookinstance_list
-    li 
-      a(href=val.url) #{val.book.title} : #{val.imprint} - #{val.code}
-  else
-    li There are no book copies in this library.
+    each val in bookinstance_list
+      li 
+        a(href=val.url) #{val.book.title} : #{val.imprint} - #{val.code}
+    else
+      li There are no book copies in this library.
