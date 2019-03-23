@@ -15,7 +15,7 @@ initGrid = function (containerId, loadDataUrl, fields) {
             loadData: function(filter) {
                 return $.ajax({
                     type: "GET",
-                    url: loadDataUrl, // "/catalog/books/book_load_grid",
+                    url: loadDataUrl, // "/book/list/book_load_grid",
                     dataType: "json",
                     data: filter
                 });

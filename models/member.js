@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 var moment = require('moment')
-var Schema = mongoose.Schema;
+var Schema = mongoose.Schema
 
 var MemberSchema = Schema ({
   first_name: { type: String, required: true},
@@ -10,19 +10,19 @@ var MemberSchema = Schema ({
   since: { type: String, required: true},
   last_renew: { type: Date, required: true},
   code: { type: String, required: true},
-});
+})
 
 MemberSchema
 .virtual('url')
 .get(function (){
-  return '/catalog/member/' + this._id;
-});
+  return '/member/' + this._id
+})
 
 MemberSchema
 .virtual('last_renew_formatted')
 .get(function () {
-return moment(this.last_renew).format('YYYY-MM-DD');
-});
+return moment(this.last_renew).format('YYYY-MM-DD')
+})
 
 
 module.exports = mongoose.model('Member', MemberSchema)
